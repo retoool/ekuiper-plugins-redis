@@ -20,7 +20,7 @@ type redisSub struct {
 	conn *redis.Client
 }
 
-func (s *redisSub) Configure(topic string, props map[string]interface{}) error {
+func (s *redisSub) Configure(datasource string, props map[string]interface{}) error {
 	cfg := &redisSubConfig{}
 	err := cast.MapToStruct(props, cfg)
 	if err != nil {
@@ -58,14 +58,13 @@ func (s *redisSub) Open(ctx api.StreamContext, consumer chan<- api.SourceTuple, 
 		case <-ctx.Done():
 			return
 		default:
-			pubsub := s.conn.PSubscribe(ctx, s.conf.Channels...)
+			sub := s.conn.PSubscribe(ctx, s.conf.Channels...)
 			defer s.conn.Close()
-			defer pubsub.Close()
+			defer sub.Close()
 			for {
 				// Subscribe Data
-				msg, err := pubsub.ReceiveMessage(ctx)
+				msg, err := sub.ReceiveMessage(ctx)
 				if err != nil {
-					// Handle the error, and exit the outer loop to stop reconnecting
 					logger.Errorf("Error receiving message from Redis: %v", err)
 					return
 				}
@@ -77,7 +76,7 @@ func (s *redisSub) Open(ctx api.StreamContext, consumer chan<- api.SourceTuple, 
 				}
 				// Decode Data
 				rm := RedisSourceFormat{}
-				decodeDatas, err := rm.Decode(ctx, data)
+				decodeDatas, err := rm.Decode(data)
 				if err != nil {
 					logger.Errorf("Error decoding data: %v", err)
 					continue

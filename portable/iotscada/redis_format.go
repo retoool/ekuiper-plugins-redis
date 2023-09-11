@@ -77,7 +77,7 @@ func (x *RedisSourceMsg) Decode(redisMsgs string, mainmetrics []string) ([]map[s
 		lastColonIndex := strings.LastIndex(point, ":")
 		devCode := point[:lastColonIndex]
 		metric := point[lastColonIndex+1:]
-		if mainmetrics != nil && !isElementInSlice(metric, mainmetrics) {
+		if len(mainmetrics) > 0 && !isElementInSlice(metric, mainmetrics) {
 			continue
 		}
 		pvs := strings.Split(pointValue, ":")

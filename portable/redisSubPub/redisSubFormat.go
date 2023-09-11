@@ -1,8 +1,8 @@
 package main
 
 import (
+	"fmt"
 	"github.com/lf-edge/ekuiper/pkg/cast"
-	"github.com/lf-edge/ekuiper/sdk/go/api"
 	"github.com/mitchellh/mapstructure"
 	"strings"
 )
@@ -15,14 +15,13 @@ type RedisSourceFormat struct {
 	Time     int64   `json:"time"`
 }
 
-func (x *RedisSourceFormat) Decode(ctx api.StreamContext, redisMsgs string) ([]map[string]interface{}, error) {
-	logger := ctx.GetLogger()
+func (x *RedisSourceFormat) Decode(redisMsgs string) ([]map[string]interface{}, error) {
 	parts := strings.Split(redisMsgs, ",")
 	var resultMsgs []map[string]interface{}
 	for _, oneMsg := range parts {
 		rs := strings.Split(oneMsg, "@")
 		if len(rs) != 2 {
-			logger.Debugln("unsupported type: %v", oneMsg)
+			fmt.Println("unsupported type: %v", oneMsg)
 			continue
 		}
 		point := rs[0]
@@ -34,12 +33,12 @@ func (x *RedisSourceFormat) Decode(ctx api.StreamContext, redisMsgs string) ([]m
 		dataType := pvs[0]
 		value, err := cast.ToFloat64(pvs[1], cast.CONVERT_ALL)
 		if err != nil {
-			logger.Debugln(err)
+			fmt.Println(err)
 			continue
 		}
 		timestamp, err := cast.ToInt64(pvs[2], cast.CONVERT_ALL)
 		if err != nil {
-			logger.Debugln(err)
+			fmt.Println(err)
 			continue
 		}
 		if countDigits64(timestamp) == 10 {
@@ -50,7 +49,7 @@ func (x *RedisSourceFormat) Decode(ctx api.StreamContext, redisMsgs string) ([]m
 			timestamp *= 1000
 		case 13:
 		default:
-			logger.Debugln("Invalid timestamp format:", timestamp)
+			fmt.Println("Invalid timestamp format:", timestamp)
 			continue
 		}
 		rm := &RedisSourceFormat{
@@ -63,7 +62,7 @@ func (x *RedisSourceFormat) Decode(ctx api.StreamContext, redisMsgs string) ([]m
 		var result map[string]interface{}
 		err = mapstructure.Decode(rm, &result)
 		if err != nil {
-			logger.Debugln("Decode failed:", err)
+			fmt.Println("Decode failed:", err)
 			continue
 		}
 		resultMsgs = append(resultMsgs, result)

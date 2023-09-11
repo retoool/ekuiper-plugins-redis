@@ -38,6 +38,16 @@ func (s *redisPub) Configure(props map[string]interface{}) error {
 		Password: s.conf.Pass,
 		DB:       s.conf.Db,
 	})
+	// Create a context
+	ctx := context.Background()
+
+	// Ping Redis to check if the connection is alive
+	pong, err := s.conn.Ping(ctx).Result()
+	if err != nil {
+		return fmt.Errorf("Ping Redis failed with error: %v", err)
+	}
+	fmt.Printf("Redis Ping response: %s\n", pong)
+
 	return nil
 }
 

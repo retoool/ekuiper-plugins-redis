@@ -2,8 +2,9 @@
   "about": {
     "trial": false,
     "author": {
-      "name": "周新桐",
-      "company": "大唐先一科技"
+      "name": "XinTong Zhou",
+      "email": "emy120115@gmail.com",
+      "company": "Hunan Datang Xianyi Technology Co., Ltd"
     },
     "description": {
       "en_US": "This is a sink plugin for Redis. It can be used to send messages to Redis message channels.",

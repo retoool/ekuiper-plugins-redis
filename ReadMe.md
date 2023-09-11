@@ -1,5 +1,21 @@
 # portable plugin
 
+## run docker container
+```shell
+docker run --rm -it -v .:/app --name ziptmp -w /app alpine:latest
+```
+## install zip
+```shell
+# apk update
+apk add zip
+```
+## zip redisSubPub.zip
+```shell
+zip -r iotscada.zip sinks sources iotscada iotscada.json
+exit
+```
+
+
 
 # native plugin
 
@@ -15,8 +31,8 @@ export GOPROXY=https://goproxy.cn
 ```
 ## go work
 ```shell
-cd /go
-go work init ./kuiper ./plugins
+cd /go/plugins && git 
+cd /go && go work init ./kuiper ./plugins
 ```
 
 ## go build

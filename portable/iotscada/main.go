@@ -14,11 +14,6 @@ func main() {
 				return &iotRedisSource{}
 			},
 		},
-		Functions: map[string]sdk.NewFunctionFunc{
-			"echo": func() api.Function {
-				return &echo{}
-			},
-		},
 		Sinks: map[string]sdk.NewSinkFunc{
 			"iotRedisSink": func() api.Sink {
 				return &iotRedisSink{}
