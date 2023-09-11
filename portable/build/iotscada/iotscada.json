@@ -1,0 +1,14 @@
+{
+  "version": "v1.0.0",
+  "language": "go",
+  "executable": "iotscada",
+  "sources": [
+    "iotRedisSource"
+  ],
+  "sinks": [
+    "iotRedisSink"
+  ],
+  "functions": [
+    "echo"
+  ]
+}

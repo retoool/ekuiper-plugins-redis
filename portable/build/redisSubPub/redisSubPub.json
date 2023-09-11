@@ -1,0 +1,11 @@
+{
+  "version": "v1.0.0",
+  "language": "go",
+  "executable": "redisSubPub",
+  "sources": [
+    "redisSub"
+  ],
+  "sinks": [
+    "redisPub"
+  ]
+}

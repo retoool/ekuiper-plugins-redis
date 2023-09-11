@@ -1,0 +1,94 @@
+{
+  "about": {
+    "trial": false,
+    "author": {
+      "name": "周新桐",
+      "company": "大唐先一科技"
+    },
+    "description": {
+      "en_US": "This is a sink plugin for Redis. It can be used to send messages to Redis message channels.",
+      "zh_CN": "发送消息到redis消息通道。"
+    }
+  },
+  "libs": [
+  ],
+  "properties": [{
+    "name": "Address",
+    "default": "127.0.0.1:6379",
+    "optional": false,
+    "control": "text",
+    "type": "string",
+    "hint": {
+      "en_US": "The Redis database address.",
+      "zh_CN": "Redis 数据库地址。"
+    },
+    "label": {
+      "en_US": "Address",
+      "zh_CN": "地址"
+    }
+  }, {
+    "name": "Db",
+    "default": 0,
+    "optional": false,
+    "control": "text",
+    "type": "int",
+    "hint": {
+      "en_US": "Database number (0 to 16).",
+      "zh_CN": "数据库号（0到16）。"
+    },
+    "label": {
+      "en_US": "Database Number",
+      "zh_CN": "数据库号"
+    }
+  }, {
+    "name": "Pass",
+    "default": "",
+    "optional": true,
+    "control": "text",
+    "type": "string",
+    "hint": {
+      "en_US": "Redis database password.",
+      "zh_CN": "redis数据库密码。"
+    },
+    "label": {
+      "en_US": "Password",
+      "zh_CN": "密码"
+    }
+  }, {
+    "name": "Channels",
+    "default": "",
+    "optional": false,
+    "control": "text",
+    "type": "string",
+    "hint": {
+      "en_US": "The channels of Redis.",
+      "zh_CN": "redis发布消息通道。"
+    },
+    "label": {
+      "en_US": "Publish Channels",
+      "zh_CN": "发布通道"
+    }
+  }, {
+    "name": "Interval",
+    "default": 1000,
+    "optional": true,
+    "control": "text",
+    "type": "int",
+    "hint": {
+      "en_US": "The interval for writing analysis results (in milliseconds).",
+      "zh_CN": "写入分析结果的间隔时间（毫秒）。"
+    },
+    "label": {
+      "en_US": "interval(ms)",
+      "zh_CN": "间隔时间(ms)"
+    }
+  }],
+  "node": {
+    "category": "sink",
+    "icon": "iconPath",
+    "label": {
+      "en": "redisPubSink",
+      "zh": "redisPubSink"
+    }
+  }
+}

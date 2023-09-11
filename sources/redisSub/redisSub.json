@@ -1,0 +1,87 @@
+{
+  "about": {
+    "trial": false,
+    "author": {
+      "name": "周新桐",
+      "company": "大唐先一科技"
+    },
+    "description": {
+      "en_US": "This is a source plugin for Redis. It can be used to subscribe to data from Redis message channels.",
+      "zh_CN": "订阅redis消息通道中的数据。"
+    }
+  },
+
+  "dataSource": {},
+  "properties": {
+    "default": [
+      {
+        "name": "Address",
+        "default": "127.0.0.1:6379",
+        "optional": false,
+        "control": "text",
+        "type": "string",
+        "hint": {
+          "en_US": "The Redis database address.",
+          "zh_CN": "redis数据库地址。"
+        },
+        "label": {
+          "en_US": "Address",
+          "zh_CN": "地址"
+        }
+      },
+      {
+        "name": "Db",
+        "default": 0,
+        "optional": false,
+        "control": "text",
+        "type": "int",
+        "hint": {
+          "en_US": "Database number (0 to 16).",
+          "zh_CN": "数据库号（0到16）。"
+        },
+        "label": {
+          "en_US": "Database Number.",
+          "zh_CN": "数据库号"
+        }
+      },
+      {
+        "name": "Pass",
+        "default": "",
+        "optional": true,
+        "control": "text",
+        "type": "string",
+        "hint": {
+          "en_US": "Redis database password.",
+          "zh_CN": "redis数据库密码。"
+        },
+        "label": {
+          "en_US": "Password",
+          "zh_CN": "密码"
+        }
+      },
+      {
+        "name": "Channels",
+        "default": "",
+        "optional": false,
+        "control": "list",
+        "type": "list_string",
+        "hint": {
+          "en_US": "Redis subscription message channels.",
+          "zh_CN": "redis订阅消息通道。"
+        },
+        "label": {
+          "en_US": "SubChannels",
+          "zh_CN": "订阅通道"
+        }
+      }
+    ],
+    "node": {
+      "category": "source",
+      "icon": "iconPath",
+      "label": {
+        "en_US": "redisSubSink",
+        "zh_CN": "redisSubSink"
+      }
+    }
+  }
+}
