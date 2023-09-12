@@ -14,8 +14,8 @@ import (
 type redisPubConfig struct {
 	Address  string `json:"address"`
 	Db       int    `json:"db"`
-	Pass     string `json:"pass"`
-	Channels string `json:"channels"`
+	Password string `json:"password"`
+	Channel  string `json:"channel"`
 	Interval int    `json:"interval"`
 }
 type redisPub struct {
@@ -35,7 +35,7 @@ func (s *redisPub) Configure(props map[string]interface{}) error {
 	s.conf = cfg
 	s.conn = redis.NewClient(&redis.Options{
 		Addr:     s.conf.Address,
-		Password: s.conf.Pass,
+		Password: s.conf.Password,
 		DB:       s.conf.Db,
 	})
 	// Create a context
@@ -84,7 +84,7 @@ func (s *redisPub) save(logger api.Logger) {
 		logger.Error(err)
 		return
 	}
-	s.conn.Publish(context.TODO(), s.conf.Channels, compressedData)
+	s.conn.Publish(context.TODO(), s.conf.Channel, compressedData)
 	if err != nil {
 		logger.Error(err)
 	} else {

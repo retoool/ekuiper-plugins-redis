@@ -16,7 +16,7 @@
   "properties": {
     "default": [
       {
-        "name": "Address",
+        "name": "address",
         "default": "127.0.0.1:6379",
         "optional": false,
         "control": "text",
@@ -31,7 +31,7 @@
         }
       },
       {
-        "name": "Db",
+        "name": "db",
         "default": 0,
         "optional": false,
         "control": "text",
@@ -46,7 +46,7 @@
         }
       },
       {
-        "name": "Pass",
+        "name": "password",
         "default": "",
         "optional": true,
         "control": "text",
@@ -61,7 +61,7 @@
         }
       },
       {
-        "name": "Channels",
+        "name": "channels",
         "default": "",
         "optional": false,
         "control": "list",

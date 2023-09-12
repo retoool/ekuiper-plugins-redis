@@ -11,7 +11,7 @@ import (
 type redisSubConfig struct {
 	Address  string   `json:"address"`
 	Db       int      `json:"db"`
-	Pass     string   `json:"pass"`
+	Password string   `json:"password"`
 	Channels []string `json:"channels"`
 }
 
@@ -29,7 +29,7 @@ func (s *redisSub) Configure(datasource string, props map[string]interface{}) er
 	s.conf = cfg
 	s.conn = redis.NewClient(&redis.Options{
 		Addr:     s.conf.Address,
-		Password: s.conf.Pass,
+		Password: s.conf.Password,
 		DB:       s.conf.Db,
 	})
 	// Create a context

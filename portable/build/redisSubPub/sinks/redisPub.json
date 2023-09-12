@@ -14,7 +14,7 @@
   "libs": [
   ],
   "properties": [{
-    "name": "Address",
+    "name": "address",
     "default": "127.0.0.1:6379",
     "optional": false,
     "control": "text",
@@ -28,7 +28,7 @@
       "zh_CN": "地址"
     }
   }, {
-    "name": "Db",
+    "name": "db",
     "default": 0,
     "optional": false,
     "control": "text",
@@ -42,7 +42,7 @@
       "zh_CN": "数据库号"
     }
   }, {
-    "name": "Pass",
+    "name": "password",
     "default": "",
     "optional": true,
     "control": "text",
@@ -56,7 +56,7 @@
       "zh_CN": "密码"
     }
   }, {
-    "name": "Channels",
+    "name": "channel",
     "default": "",
     "optional": false,
     "control": "text",
@@ -70,7 +70,7 @@
       "zh_CN": "发布通道"
     }
   }, {
-    "name": "Interval",
+    "name": "interval",
     "default": 1000,
     "optional": true,
     "control": "text",

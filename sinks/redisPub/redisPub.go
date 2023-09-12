@@ -14,8 +14,8 @@ import (
 type redisPubConfig struct {
 	Address  string `json:"address"`
 	Db       int    `json:"db"`
-	Pass     string `json:"pass"`
-	Channels string `json:"channels"`
+	Password string `json:"password"`
+	Channel  string `json:"channel"`
 	Interval int    `json:"interval"`
 }
 type redisPub struct {
@@ -35,18 +35,17 @@ func (s *redisPub) Configure(props map[string]interface{}) error {
 	s.conf = cfg
 	s.conn = redis.NewClient(&redis.Options{
 		Addr:     s.conf.Address,
-		Password: s.conf.Pass,
+		Password: s.conf.Password,
 		DB:       s.conf.Db,
 	})
 	// Create a context
 	ctx := context.Background()
 
 	// Ping Redis to check if the connection is alive
-	pong, err := s.conn.Ping(ctx).Result()
+	err = s.conn.Ping(ctx).Err()
 	if err != nil {
 		return fmt.Errorf("Ping Redis failed with error: %v", err)
 	}
-	fmt.Printf("Redis Ping response: %s\n", pong)
 
 	return nil
 }
@@ -77,6 +76,7 @@ func (s *redisPub) save(logger api.Logger) {
 	if len(s.results) == 0 {
 		return
 	}
+	// Compress
 	msgList := bytes.Join(s.results, []byte(","))
 	msgList = append([]byte(","), msgList...)
 	compressedData, err := CompressData(msgList)
@@ -84,7 +84,7 @@ func (s *redisPub) save(logger api.Logger) {
 		logger.Error(err)
 		return
 	}
-	s.conn.Publish(context.TODO(), s.conf.Channels, compressedData)
+	s.conn.Publish(context.TODO(), s.conf.Channel, compressedData)
 	if err != nil {
 		logger.Error(err)
 	} else {
@@ -100,13 +100,15 @@ func (s *redisPub) Collect(ctx api.StreamContext, item interface{}) error {
 	switch v := item.(type) {
 	case []map[string]interface{}:
 		for _, trandata := range v {
+			// Encode
 			rm := RedisSinkFormat{}
-			decodedBytes, err := rm.Encode(trandata)
+			encodedBytes, err := rm.Encode(trandata)
 			if err != nil {
 				logger.Error(err)
 				continue
 			}
-			s.results = append(s.results, decodedBytes)
+			s.results = append(s.results, encodedBytes)
+
 			//decodedBytes, _, err := ctx.TransformOutput(trandata)
 			//if err != nil {
 			//	return fmt.Errorf("redisPub sink transform data error: %v", err)

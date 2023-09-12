@@ -15,7 +15,8 @@ type RedisSourceFormat struct {
 	Time     int64   `json:"time"`
 }
 
-func (x *RedisSourceFormat) Decode(redisMsgs string) ([]map[string]interface{}, error) {
+func (x *RedisSourceFormat) Decode(b []byte) (interface{}, error) {
+	redisMsgs := string(b)
 	parts := strings.Split(redisMsgs, ",")
 	var resultMsgs []map[string]interface{}
 	for _, oneMsg := range parts {

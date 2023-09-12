@@ -2,49 +2,60 @@ package main
 
 import (
 	"context"
+	"ekuiper-plugins-redis/pkg/compressor"
 	"fmt"
 	"github.com/lf-edge/ekuiper/pkg/api"
 	"github.com/lf-edge/ekuiper/pkg/cast"
+	"github.com/lf-edge/ekuiper/pkg/message"
 	redis "github.com/redis/go-redis/v9"
 )
 
-type redisSubConfig struct {
-	Address  string   `json:"address"`
-	Db       int      `json:"db"`
-	Pass     string   `json:"pass"`
-	Channels []string `json:"channels"`
-}
-
 type redisSub struct {
-	conf *redisSubConfig
-	conn *redis.Client
+	conf         *redisSubConfig
+	conn         *redis.Client
+	decompressor message.Decompressor
 }
 
-func (s *redisSub) Configure(datasource string, props map[string]interface{}) error {
+type redisSubConfig struct {
+	Address       string   `json:"address"`
+	Db            int      `json:"db"`
+	Password      string   `json:"password"`
+	Channels      []string `json:"channels"`
+	Decompression string   `json:"decompression"`
+}
+
+func (r *redisSub) Configure(topic string, props map[string]interface{}) error {
 	cfg := &redisSubConfig{}
 	err := cast.MapToStruct(props, cfg)
 	if err != nil {
 		return fmt.Errorf("read properties %v fail with error: %v", props, err)
 	}
-	s.conf = cfg
-	s.conn = redis.NewClient(&redis.Options{
-		Addr:     s.conf.Address,
-		Password: s.conf.Pass,
-		DB:       s.conf.Db,
+	r.conf = cfg
+	r.conn = redis.NewClient(&redis.Options{
+		Addr:     r.conf.Address,
+		Password: r.conf.Password,
+		DB:       r.conf.Db,
 	})
+
+	if cfg.Decompression != "" {
+		dc, err := compressor.GetDecompressor(cfg.Decompression)
+		if err != nil {
+			return fmt.Errorf("get decompressor %r fail with error: %v", cfg.Decompression, err)
+		}
+		r.decompressor = dc
+	}
+
 	// Create a context
 	ctx := context.Background()
 
 	// Ping Redis to check if the connection is alive
-	pong, err := s.conn.Ping(ctx).Result()
+	err = r.conn.Ping(ctx).Err()
 	if err != nil {
 		return fmt.Errorf("Ping Redis failed with error: %v", err)
 	}
-	fmt.Printf("Redis Ping response: %s\n", pong)
-
 	return nil
 }
-func (s *redisSub) Open(ctx api.StreamContext, consumer chan<- api.SourceTuple, errCh chan<- error) {
+func (r *redisSub) Open(ctx api.StreamContext, consumer chan<- api.SourceTuple, errCh chan<- error) {
 	logger := ctx.GetLogger()
 	defer func() {
 		if r := recover(); r != nil {
@@ -58,40 +69,41 @@ func (s *redisSub) Open(ctx api.StreamContext, consumer chan<- api.SourceTuple, 
 		case <-ctx.Done():
 			return
 		default:
-			sub := s.conn.PSubscribe(ctx, s.conf.Channels...)
-			defer s.conn.Close()
+			sub := r.conn.PSubscribe(ctx, r.conf.Channels...)
+			defer r.conn.Close()
 			defer sub.Close()
 			for {
-				// Subscribe Data
+				// Subscribe
 				msg, err := sub.ReceiveMessage(ctx)
 				if err != nil {
 					logger.Errorf("Error receiving message from Redis: %v", err)
 					return
 				}
-				// Decompress Data
-				data, err := DecompressData(cast.StringToBytes(msg.Payload))
+				payload := cast.StringToBytes(msg.Payload)
+				// Decompress
+				if r.decompressor != nil {
+					payload, err = r.decompressor.Decompress(payload)
+					if err != nil {
+						logger.Errorf("can not decompress redis message %v.", err)
+					}
+				}
+				// Decode
+				decodeDatas, err := ctx.DecodeIntoList(payload)
 				if err != nil {
-					logger.Errorf("Error decompressing data: %v", err)
+					logger.Errorf("Invalid data format, cannot decode %s with error %s", string(payload), err)
 					continue
 				}
-				// Decode Data
-				rm := RedisSourceFormat{}
-				decodeDatas, err := rm.Decode(data)
-				if err != nil {
-					logger.Errorf("Error decoding data: %v", err)
-					continue
-				}
-				// Send Data
-				for _, decodeData := range decodeDatas {
-					consumer <- api.NewDefaultSourceTuple(decodeData, nil)
+				// Send
+				for _, item := range decodeDatas {
+					consumer <- api.NewDefaultSourceTuple(item, nil)
 				}
 			}
 		}
 	}
 }
 
-func (s *redisSub) Close(ctx api.StreamContext) error {
-	ctx.GetLogger().Infof("Closing redis sink")
+func (r *redisSub) Close(ctx api.StreamContext) error {
+	ctx.GetLogger().Infof("Closing redisSub source")
 	return nil
 }
 
