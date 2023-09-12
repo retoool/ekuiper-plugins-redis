@@ -4,6 +4,9 @@
 ```shell
 docker run --rm -it -v .:/app --name ziptmp -w /app alpine:latest
 ```
+```shell
+docker exec -it ziptmp bash
+```
 ## install zip
 ```shell
 # apk update
@@ -23,7 +26,9 @@ exit
 ```shell
 docker run -it --name ekuiper-dev -v .:/go/plugins -w /go  lfedge/ekuiper:1.11.1-dev bash
 ```
-
+```shell
+docker exec -it ekuiper-dev bash
+```
 ## go env set
 ```shell
 export GO111MODULE=on

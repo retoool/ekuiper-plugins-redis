@@ -69,21 +69,27 @@
       "en_US": "Publish Channels",
       "zh_CN": "发布通道"
     }
-  }, {
-    "name": "interval",
-    "default": 1000,
+  },{
+    "name": "compression",
     "optional": true,
-    "control": "text",
-    "type": "int",
+    "control": "select",
+    "type": "string",
+    "values": [
+      "zlib",
+      "gzip",
+      "flate",
+      "zstd"
+    ],
     "hint": {
-      "en_US": "The interval for writing analysis results (in milliseconds).",
-      "zh_CN": "写入分析结果的间隔时间（毫秒）。"
+      "en_US": "Compress the payload with the specified compression method.",
+      "zh_CN": "使用指定的压缩方法压缩 Payload。"
     },
     "label": {
-      "en_US": "interval(ms)",
-      "zh_CN": "间隔时间(ms)"
+      "en_US": "Compression",
+      "zh_CN": "压缩"
     }
-  }],
+  }
+  ],
   "node": {
     "category": "sink",
     "icon": "iconPath",
