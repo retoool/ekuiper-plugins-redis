@@ -13,8 +13,6 @@ import (
 type redisPub struct {
 	conf       *redisPubConfig
 	conn       *redis.Client
-	results    [][]byte
-	cancel     context.CancelFunc
 	compressor message.Compressor
 }
 

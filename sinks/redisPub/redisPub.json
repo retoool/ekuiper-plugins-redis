@@ -7,8 +7,8 @@
       "company": "Hunan Datang Xianyi Technology Co., Ltd"
     },
     "description": {
-      "en_US": "This is a sink plugin for Redis. It can be used to send messages to Redis message channels.",
-      "zh_CN": "发送消息到redis消息通道。"
+      "en_US": "This operation is used to publish the output message to the Redis message channel.",
+      "zh_CN": "该操作用于将输出消息发布到redis消息通道。"
     }
   },
   "libs": [

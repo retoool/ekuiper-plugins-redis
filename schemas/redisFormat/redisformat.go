@@ -17,12 +17,20 @@ type ScadaRedis struct {
 }
 
 func (x *ScadaRedis) GetSchemaJson() string {
-	return ""
+	// return a static schema
+	return `{
+		"DevCode": {"type": "string"},
+		"Metric": {"type": "string"},
+		"DataType": {"type": "string"},
+		"Value": {"type": "string"},
+		"Time": {"type": "string"}
+	}`
 }
 
 func (x *ScadaRedis) Encode(d interface{}) ([]byte, error) {
 	switch r := d.(type) {
 	case map[string]interface{}:
+		fmt.Println("sink rec:", r)
 		err := MapToStructStrict(r, x)
 		if err != nil {
 			return nil, err
@@ -34,6 +42,7 @@ func (x *ScadaRedis) Encode(d interface{}) ([]byte, error) {
 	case []map[string]interface{}:
 		var bs [][]byte
 		for item := range r {
+			fmt.Println("sink rec:", item)
 			err := MapToStructStrict(item, x)
 			if err != nil {
 				return nil, err
@@ -54,10 +63,11 @@ func (x *ScadaRedis) Encode(d interface{}) ([]byte, error) {
 func (x *ScadaRedis) Decode(b []byte) (interface{}, error) {
 	parts := strings.Split(string(b), ",")
 	var resultMsgs []map[string]interface{}
+	//fmt.Println("........................................")
 	for _, oneMsg := range parts {
 		rs := strings.Split(oneMsg, "@")
 		if len(rs) != 2 {
-			fmt.Println("unsupported type: %v", oneMsg)
+			//fmt.Printf("unsupported type: %v", oneMsg)
 			continue
 		}
 		point := rs[0]
@@ -77,7 +87,7 @@ func (x *ScadaRedis) Decode(b []byte) (interface{}, error) {
 			timestamp *= 1000
 		case 13:
 		default:
-			fmt.Println("Invalid timestamp format:", timestamp)
+			//fmt.Println("Invalid timestamp format:", timestamp)
 			continue
 		}
 		rm := &ScadaRedis{
@@ -90,7 +100,7 @@ func (x *ScadaRedis) Decode(b []byte) (interface{}, error) {
 		var result map[string]interface{}
 		err := mapstructure.Decode(rm, &result)
 		if err != nil {
-			fmt.Println("Decode failed:", err)
+			//fmt.Println("Decode failed:", err)
 			continue
 		}
 		resultMsgs = append(resultMsgs, result)
@@ -106,6 +116,7 @@ func countDigits64(num int64) int {
 	}
 	return count
 }
+
 func MapToStructStrict(input, output interface{}) error {
 	config := &mapstructure.DecoderConfig{
 		ErrorUnused: true,
@@ -118,4 +129,8 @@ func MapToStructStrict(input, output interface{}) error {
 	}
 
 	return decoder.Decode(input)
+}
+
+func GetScadaRedis() interface{} {
+	return &ScadaRedis{}
 }

@@ -21,7 +21,7 @@ func (x *RedisSourceFormat) Decode(redisMsgs string) ([]map[string]interface{}, 
 	for _, oneMsg := range parts {
 		rs := strings.Split(oneMsg, "@")
 		if len(rs) != 2 {
-			fmt.Println("unsupported type: %v", oneMsg)
+			fmt.Printf("unsupported type: %v", oneMsg)
 			continue
 		}
 		point := rs[0]
